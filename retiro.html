@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paso 2: Sucursal y Fecha | Pastelería La Ceiba</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app-container">
+  <header>
+    <a href="index.html" class="brand">
+      <div class="brand-icon">🎂</div>
+      <div>
+        <h1>Pastelería La Ceiba</h1>
+        <p>Tradición artesanal • Pedidos en línea</p>
+      </div>
+    </a>
+
+    <nav class="stepper">
+      <a href="index.html" class="step-pill completed">✓ 1. Tu Pastel</a>
+      <a href="retiro.html" class="step-pill active">2. Retiro y Fecha</a>
+      <a href="pago.html" class="step-pill">3. Anticipo y DTE</a>
+    </nav>
+  </header>
+
+  <div class="main-grid">
+    <div class="screen-area">
+      <h2 class="section-title">Sucursal y Fecha de Retiro</h2>
+      <p class="section-subtitle">Selecciona dónde retirarás tu pastel con mínimo 48 horas de anticipación (HU-1 y HU-2).</p>
+
+      <div class="two-cols">
+        <div class="form-group">
+          <label class="form-label">1. Sucursal de Retiro (5 tiendas)</label>
+          <select id="select-branch" onchange="updateDelivery()">
+            <option value="Sucursal Santa Tecla">Sucursal Santa Tecla</option>
+            <option value="Sucursal Escalón">Sucursal Escalón</option>
+            <option value="Sucursal Antiguo Cuscatlán">Sucursal Antiguo Cuscatlán</option>
+            <option value="Sucursal San Benito">Sucursal San Benito</option>
+            <option value="Sucursal Merliot">Sucursal Merliot</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">2. Bloque Horario</label>
+          <select id="select-time" onchange="updateDelivery()">
+            <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
+            <option value="02:00 PM - 04:00 PM">02:00 PM - 04:00 PM</option>
+            <option value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Calendario Interactivo -->
+      <div class="form-group">
+        <label class="form-label">3. Disponibilidad de Producción (Límite 120 pasteles/día)</label>
+        <div class="calendar-legend">
+          <span class="legend-item"><span class="dot" style="background:#F2EFE9;border:1px solid #CCC"></span> Bloqueado (&lt;48h)</span>
+          <span class="legend-item"><span class="dot" style="background:var(--error)"></span> Cupo Lleno (120/120 pasteles)</span>
+          <span class="legend-item"><span class="dot" style="background:var(--primary)"></span> Fecha Seleccionada</span>
+        </div>
+
+        <div class="calendar-grid">
+          <div class="cal-header">Mié</div>
+          <div class="cal-header">Jue</div>
+          <div class="cal-header">Vie</div>
+          <div class="cal-header">Sáb</div>
+          <div class="cal-header">Dom</div>
+          <div class="cal-header">Lun</div>
+          <div class="cal-header">Mar</div>
+
+          <div class="cal-day disabled-48h" onclick="show48hError()">14<span class="sub">Hoy</span></div>
+          <div class="cal-day disabled-48h" onclick="show48hError()">15<span class="sub">&lt;48h</span></div>
+          <div class="cal-day" onclick="pickDate(this, 'Vie 16 Oct 2026')">16<span class="sub">94/120</span></div>
+          <div class="cal-day full-capacity" onclick="showFullCapacityError()">17<span class="sub">120/120</span></div>
+          <div class="cal-day selected" id="day-18" onclick="pickDate(this, 'Dom 18 Oct 2026')">18<span class="sub">82/120</span></div>
+          <div class="cal-day" onclick="pickDate(this, 'Lun 19 Oct 2026')">19<span class="sub">45/120</span></div>
+          <div class="cal-day" onclick="pickDate(this, 'Mar 20 Oct 2026')">20<span class="sub">30/120</span></div>
+        </div>
+      </div>
+
+      <!-- Caja de Estado de Error / Información -->
+      <div class="alert-box" id="calendar-alert"></div>
+
+      <div class="btn-row">
+        <a href="index.html" class="btn btn-secondary">← Volver al Pastel</a>
+        <a href="pago.html" class="btn btn-primary" onclick="updateDelivery()">
+          Continuar a Anticipo y Facturación →
+        </a>
+      </div>
+    </div>
+
+    <!-- Sidebar de Resumen -->
+    <aside class="summary-sidebar">
+      <div>
+        <h3 style="font-family:'Playfair Display',serif; color:var(--primary); margin-bottom:14px;">
+          Resumen de tu Pedido
+        </h3>
+        <div class="cake-preview-card">
+          <div class="cake-visual">
+            <div class="cake-tier-top" id="visual-top"></div>
+            <div class="cake-tier-bottom" id="visual-bottom">
+              <div class="cake-filling-line" id="visual-filling"></div>
+            </div>
+            <div class="cake-stand"></div>
+          </div>
+          <ul class="summary-list">
+            <li><span>Tamaño:</span> <span id="sum-size">20 porciones</span></li>
+            <li><span>Bizcocho:</span> <span id="sum-flavor">Chocolate Intenso</span></li>
+            <li><span>Relleno:</span> <span id="sum-filling">Dulce de Leche</span></li>
+            <li><span>Sucursal:</span> <span id="sum-branch">Sucursal Santa Tecla</span></li>
+            <li><span>Fecha Retiro:</span> <span id="sum-date">Dom 18 Oct 2026</span></li>
+            <li><span>Horario:</span> <span id="sum-time">10:00 AM - 12:00 PM</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Costo Total del Pastel:</span>
+          <span id="price-total">$36.00</span>
+        </div>
+        <div class="price-row highlight">
+          <span>Anticipo hoy (50%):</span>
+          <span id="price-deposit">$18.00</span>
+        </div>
+        <div class="price-row" style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+          <span>Saldo pendiente al retirar:</span>
+          <span id="price-balance">$18.00</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  let order = JSON.parse(localStorage.getItem('laCeibaOrder')) || {
+    sizeName: '20 porciones',
+    basePrice: 36,
+    extrasPrice: 0,
+    total: 36,
+    deposit: 18,
+    flavor: 'Chocolate Intenso',
+    cakeColor: '#4A2511',
+    filling: 'Dulce de Leche',
+    fillingColor: '#C67D3B',
+    frosting: 'Buttercream Suizo',
+    frostingColor: '#FFFDF9',
+    branch: 'Sucursal Santa Tecla',
+    timeSlot: '10:00 AM - 12:00 PM',
+    date: 'Dom 18 Oct 2026'
+  };
+
+  function pickDate(el, dateStr) {
+    document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('selected'));
+    el.classList.add('selected');
+    order.date = dateStr;
+    document.getElementById('calendar-alert').style.display = 'none';
+    updateDelivery();
+  }
+
+  function showFullCapacityError() {
+    const alertBox = document.getElementById('calendar-alert');
+    alertBox.className = 'alert-box error';
+    alertBox.innerHTML = `
+      <div>⚠️</div>
+      <div>
+        <strong>Capacidad diaria agotada (HU-2):</strong> El Sábado 17 de Octubre ya alcanzó el límite de <strong>120 pasteles</strong> entre las 5 sucursales.
+        El sistema te sugiere el <strong>Domingo 18 de Octubre</strong> (cupo disponible: 82/120).
+      </div>
+    `;
+  }
+
+  function show48hError() {
+    const alertBox = document.getElementById('calendar-alert');
+    alertBox.className = 'alert-box info';
+    alertBox.innerHTML = `
+      <div>⏳</div>
+      <div>
+        <strong>Anticipación mínima requerida (HU-1 y HU-5):</strong> Los pedidos deben realizarse con al menos <strong>48 horas de anticipación</strong> para planificar horneado e insumos.
+      </div>
+    `;
+  }
+
+  function updateDelivery() {
+    order.branch = document.getElementById('select-branch').value;
+    order.timeSlot = document.getElementById('select-time').value;
+    localStorage.setItem('laCeibaOrder', JSON.stringify(order));
+
+    document.getElementById('sum-size').textContent = order.sizeName;
+    document.getElementById('sum-flavor').textContent = order.flavor;
+    document.getElementById('sum-filling').textContent = order.filling;
+    document.getElementById('sum-branch').textContent = order.branch;
+    document.getElementById('sum-date').textContent = order.date;
+    document.getElementById('sum-time').textContent = order.timeSlot;
+
+    const total = order.total || 36;
+    const deposit = total / 2;
+    document.getElementById('price-total').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('price-deposit').textContent = `$${deposit.toFixed(2)}`;
+    document.getElementById('price-balance').textContent = `$${deposit.toFixed(2)}`;
+
+    const top = document.getElementById('visual-top');
+    const bot = document.getElementById('visual-bottom');
+    top.style.background = order.cakeColor;
+    bot.style.background = order.cakeColor;
+    top.style.borderTopColor = order.frostingColor;
+    bot.style.borderTopColor = order.frostingColor;
+    document.getElementById('visual-filling').style.background = order.fillingColor;
+  }
+
+  window.onload = () => {
+    document.getElementById('select-branch').value = order.branch || 'Sucursal Santa Tecla';
+    document.getElementById('select-time').value = order.timeSlot || '10:00 AM - 12:00 PM';
+    updateDelivery();
+  };
+</script>
+
+</body>
+</html>

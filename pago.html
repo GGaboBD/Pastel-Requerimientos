@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paso 3: Anticipo y Facturación DTE | Pastelería La Ceiba</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app-container">
+  <header>
+    <a href="index.html" class="brand">
+      <div class="brand-icon">🎂</div>
+      <div>
+        <h1>Pastelería La Ceiba</h1>
+        <p>Tradición artesanal • Pedidos en línea</p>
+      </div>
+    </a>
+
+    <nav class="stepper">
+      <a href="index.html" class="step-pill completed">✓ 1. Tu Pastel</a>
+      <a href="retiro.html" class="step-pill completed">✓ 2. Retiro y Fecha</a>
+      <a href="pago.html" class="step-pill active">3. Anticipo y DTE</a>
+    </nav>
+  </header>
+
+  <div class="main-grid">
+    <div class="screen-area">
+      <h2 class="section-title">Anticipo (50%) y Facturación DTE</h2>
+      <p class="section-subtitle">Asegura tu pedido abonando el 50% hoy. Emitiremos tu DTE ante Hacienda automáticamente (HU-3 y HU-4).</p>
+
+      <!-- 1. Datos Fiscales DTE (HU-4) -->
+      <label class="form-label">1. Comprobante Tributario Electrónico (HU-4)</label>
+      <div class="tax-tabs">
+        <div class="tax-tab active" onclick="selectTaxType(this, 'Factura Consumidor Final')">Factura Consumidor Final</div>
+        <div class="tax-tab" onclick="selectTaxType(this, 'Crédito Fiscal (CCF)')">Crédito Fiscal (CCF)</div>
+      </div>
+
+      <div class="two-cols" style="margin-bottom:16px;">
+        <div>
+          <label class="form-label" id="lbl-client">Nombre o Razón Social</label>
+          <input type="text" id="input-name" value="Marta Rivas" placeholder="Nombre completo">
+        </div>
+        <div>
+          <label class="form-label" id="lbl-doc">DUI / NIT</label>
+          <input type="text" id="input-doc" value="0614-150895-102-3" placeholder="00000000-0">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Correo electrónico (Envío de DTE y Orden)</label>
+        <input type="email" id="input-email" value="marta.rivas@correo.com">
+      </div>
+
+      <!-- 2. Pasarela de Pago (HU-3) -->
+      <div class="form-group">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <label class="form-label" style="margin:0;">2. Tarjeta de Crédito o Débito (HU-3)</label>
+          <button type="button" class="btn btn-outline-error" onclick="triggerPaymentError()">⚡ Simular Error de Tarjeta</button>
+        </div>
+        <input type="text" id="card-num" value="4532 •••• •••• 8891" style="margin-bottom:10px;">
+        <div class="two-cols">
+          <input type="text" id="card-exp" value="08/29" placeholder="MM/AA">
+          <input type="text" id="card-cvv" value="842" placeholder="CVV">
+        </div>
+      </div>
+
+      <!-- Alerta de Estado de Error en Pasarela -->
+      <div class="alert-box" id="payment-alert"></div>
+
+      <div class="btn-row">
+        <a href="retiro.html" class="btn btn-secondary">← Volver a Fecha</a>
+        <button type="button" class="btn btn-primary" onclick="confirmOrderSuccess()">
+          🔒 Pagar Anticipo (<span id="btn-deposit">$18.00</span>) y Confirmar
+        </button>
+      </div>
+    </div>
+
+    <!-- Sidebar de Resumen -->
+    <aside class="summary-sidebar">
+      <div>
+        <h3 style="font-family:'Playfair Display',serif; color:var(--primary); margin-bottom:14px;">
+          Resumen de tu Pedido
+        </h3>
+        <div class="cake-preview-card">
+          <div class="cake-visual">
+            <div class="cake-tier-top" id="visual-top"></div>
+            <div class="cake-tier-bottom" id="visual-bottom">
+              <div class="cake-filling-line" id="visual-filling"></div>
+            </div>
+            <div class="cake-stand"></div>
+          </div>
+          <ul class="summary-list">
+            <li><span>Tamaño:</span> <span id="sum-size">20 porciones</span></li>
+            <li><span>Bizcocho:</span> <span id="sum-flavor">Chocolate Intenso</span></li>
+            <li><span>Relleno:</span> <span id="sum-filling">Dulce de Leche</span></li>
+            <li><span>Betún:</span> <span id="sum-frosting">Buttercream Suizo</span></li>
+            <li><span>Sucursal:</span> <span id="sum-branch">Sucursal Santa Tecla</span></li>
+            <li><span>Retiro:</span> <span id="sum-date">Dom 18 Oct 2026</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Total del Pastel:</span>
+          <span id="price-total">$36.00</span>
+        </div>
+        <div class="price-row highlight">
+          <span>Anticipo a cobrar hoy (50%):</span>
+          <span id="price-deposit">$18.00</span>
+        </div>
+        <div class="price-row" style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+          <span>Saldo pendiente en sucursal (HU-6):</span>
+          <span id="price-balance">$18.00</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- Modal de Estado de Éxito (HU-3 y HU-4) -->
+<div class="modal-overlay" id="success-modal">
+  <div class="modal-card">
+    <div class="success-badge">✓</div>
+    <h2 class="section-title">¡Pedido Confirmado!</h2>
+    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px;">
+      Orden <strong>#LC-2026-104</strong> • Estado: <span style="color:var(--success);font-weight:700;">Confirmado</span>
+    </p>
+    <p style="font-size:0.92rem;">
+      Se procesó el cobro del <strong>50% de anticipo (<span id="modal-deposit">$18.00</span>)</strong>. Tu pastel ya aparece en el panel de producción y de <strong id="modal-branch">Sucursal Santa Tecla</strong> para el <strong id="modal-date">Dom 18 Oct 2026</strong>.
+    </p>
+
+    <div class="dte-box">
+      <strong>📄 Facturación Electrónica (Hacienda - HU-4):</strong><br>
+      • Documento: <span id="modal-tax">Factura Consumidor Final</span><br>
+      • Cliente: <span id="modal-client">Marta Rivas</span><br>
+      • Código DTE: <code>DTE-01-S002P001-00000049182</code><br>
+      • Copia enviada a: <span id="modal-email">marta.rivas@correo.com</span>
+    </div>
+
+    <a href="index.html" class="btn btn-primary" onclick="clearOrder()">
+      Realizar un nuevo pedido
+    </a>
+  </div>
+</div>
+
+<script>
+  let order = JSON.parse(localStorage.getItem('laCeibaOrder')) || {
+    sizeName: '20 porciones',
+    basePrice: 36,
+    extrasPrice: 0,
+    total: 36,
+    deposit: 18,
+    flavor: 'Chocolate Intenso',
+    cakeColor: '#4A2511',
+    filling: 'Dulce de Leche',
+    fillingColor: '#C67D3B',
+    frosting: 'Buttercream Suizo',
+    frostingColor: '#FFFDF9',
+    branch: 'Sucursal Santa Tecla',
+    timeSlot: '10:00 AM - 12:00 PM',
+    date: 'Dom 18 Oct 2026'
+  };
+
+  let selectedTax = 'Factura Consumidor Final';
+
+  function selectTaxType(tab, type) {
+    document.querySelectorAll('.tax-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    selectedTax = type;
+    document.getElementById('lbl-doc').textContent = type.includes('Crédito') ? 'NIT y NRC Contribuyente' : 'DUI / NIT';
+  }
+
+  function triggerPaymentError() {
+    const alertBox = document.getElementById('payment-alert');
+    alertBox.className = 'alert-box error';
+    alertBox.innerHTML = `
+      <div>❌</div>
+      <div>
+        <strong>Error en la pasarela de pago:</strong> La transacción del 50% de anticipo fue declinada por el banco emisor. Verifica los fondos o los datos de tu tarjeta e intenta nuevamente.
+      </div>
+    `;
+  }
+
+  function confirmOrderSuccess() {
+    const name = document.getElementById('input-name').value.trim();
+    const doc = document.getElementById('input-doc').value.trim();
+    const email = document.getElementById('input-email').value.trim();
+
+    if (!name || !doc || !email) {
+      const alertBox = document.getElementById('payment-alert');
+      alertBox.className = 'alert-box error';
+      alertBox.innerHTML = `
+        <div>⚠️</div>
+        <div><strong>Datos fiscales incompletos (HU-4):</strong> Completa nombre, documento y correo para emitir el DTE ante Hacienda.</div>
+      `;
+      return;
+    }
+
+    document.getElementById('payment-alert').style.display = 'none';
+    const total = order.total || 36;
+    const deposit = total / 2;
+
+    document.getElementById('modal-deposit').textContent = `$${deposit.toFixed(2)}`;
+    document.getElementById('modal-branch').textContent = order.branch;
+    document.getElementById('modal-date').textContent = `${order.date} (${order.timeSlot})`;
+    document.getElementById('modal-tax').textContent = selectedTax;
+    document.getElementById('modal-client').textContent = `${name} (${doc})`;
+    document.getElementById('modal-email').textContent = email;
+
+    document.getElementById('success-modal').style.display = 'flex';
+  }
+
+  function clearOrder() {
+    localStorage.removeItem('laCeibaOrder');
+  }
+
+  window.onload = () => {
+    const total = order.total || 36;
+    const deposit = total / 2;
+
+    document.getElementById('sum-size').textContent = order.sizeName;
+    document.getElementById('sum-flavor').textContent = order.flavor;
+    document.getElementById('sum-filling').textContent = order.filling;
+    document.getElementById('sum-frosting').textContent = order.frosting;
+    document.getElementById('sum-branch').textContent = order.branch;
+    document.getElementById('sum-date').textContent = `${order.date}`;
+
+    document.getElementById('price-total').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('price-deposit').textContent = `$${deposit.toFixed(2)}`;
+    document.getElementById('price-balance').textContent = `$${deposit.toFixed(2)}`;
+    document.getElementById('btn-deposit').textContent = `$${deposit.toFixed(2)}`;
+
+    const top = document.getElementById('visual-top');
+    const bot = document.getElementById('visual-bottom');
+    top.style.background = order.cakeColor;
+    bot.style.background = order.cakeColor;
+    top.style.borderTopColor = order.frostingColor;
+    bot.style.borderTopColor = order.frostingColor;
+    document.getElementById('visual-filling').style.background = order.fillingColor;
+  };
+</script>
+
+</body>
+</html>

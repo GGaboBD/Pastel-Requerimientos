@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paso 1: Arma tu Pastel | Pastelería La Ceiba</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app-container">
+  <header>
+    <a href="index.html" class="brand">
+      <div class="brand-icon">🎂</div>
+      <div>
+        <h1>Pastelería La Ceiba</h1>
+        <p>Tradición artesanal • Pedidos en línea</p>
+      </div>
+    </a>
+
+    <nav class="stepper">
+      <a href="index.html" class="step-pill active">1. Tu Pastel</a>
+      <a href="retiro.html" class="step-pill">2. Retiro y Fecha</a>
+      <a href="pago.html" class="step-pill">3. Anticipo y DTE</a>
+    </nav>
+  </header>
+
+  <div class="main-grid">
+    <div class="screen-area">
+      <h2 class="section-title">Arma tu propio pastel</h2>
+      <p class="section-subtitle">Personaliza tu pedido con las opciones de nuestro catálogo artesanal (HU-1).</p>
+
+      <!-- 1. Tamaño -->
+      <div class="form-group">
+        <label class="form-label">1. Tamaño del Pastel</label>
+        <div class="options-grid">
+          <div class="option-card" id="size-10" onclick="selectSize('10 porciones', 22, 'size-10')">
+            <span class="title">Pequeño</span>
+            <span class="meta">10 porciones</span>
+            <span class="price-tag">$22.00</span>
+          </div>
+          <div class="option-card selected" id="size-20" onclick="selectSize('20 porciones', 36, 'size-20')">
+            <span class="title">Mediano</span>
+            <span class="meta">20 porciones</span>
+            <span class="price-tag">$36.00</span>
+          </div>
+          <div class="option-card" id="size-30" onclick="selectSize('30 porciones', 50, 'size-30')">
+            <span class="title">Grande</span>
+            <span class="meta">30 porciones</span>
+            <span class="price-tag">$50.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Sabor y 3. Relleno -->
+      <div class="two-cols">
+        <div class="form-group">
+          <label class="form-label">2. Sabor de Bizcocho</label>
+          <select id="select-flavor" onchange="saveAndRender()">
+            <option value="Chocolate Intenso" data-color="#4A2511">Chocolate Intenso</option>
+            <option value="Vainilla Clásica" data-color="#F3E5AB">Vainilla Clásica</option>
+            <option value="Red Velvet" data-color="#8B1E24">Red Velvet</option>
+            <option value="Zanahoria y Nueces" data-color="#C87A28">Zanahoria y Nueces</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">3. Relleno</label>
+          <select id="select-filling" onchange="saveAndRender()">
+            <option value="Dulce de Leche" data-color="#C67D3B" data-extra="0">Dulce de Leche Artesanal (Incluido)</option>
+            <option value="Fresa Natural" data-color="#E04F5F" data-extra="2">Jalea de Fresa Natural (+$2.00)</option>
+            <option value="Crema Avellana" data-color="#3D1E10" data-extra="4">Crema de Avellanas (+$4.00)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 4. Betún y 5. Foto -->
+      <div class="two-cols">
+        <div class="form-group">
+          <label class="form-label">4. Betún / Cobertura</label>
+          <select id="select-frosting" onchange="saveAndRender()">
+            <option value="Buttercream Suizo" data-color="#FFFDF9" data-extra="0">Buttercream Suizo (Incluido)</option>
+            <option value="Ganache de Chocolate" data-color="#2A1508" data-extra="3">Ganache de Chocolate (+$3.00)</option>
+            <option value="Merengue Italiano" data-color="#F7F0F5" data-extra="0">Merengue Italiano (Incluido)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">5. Foto de Referencia (HU-5)</label>
+          <div class="upload-box" id="upload-box" onclick="simulateUpload()">
+            📷 <span id="upload-text">Adjuntar foto para producción</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <a href="retiro.html" class="btn btn-primary" onclick="saveAndRender()">
+          Continuar a Sucursal y Fecha →
+        </a>
+      </div>
+    </div>
+
+    <!-- Sidebar de Resumen -->
+    <aside class="summary-sidebar">
+      <div>
+        <h3 style="font-family:'Playfair Display',serif; color:var(--primary); margin-bottom:14px;">
+          Resumen de tu Pedido
+        </h3>
+        <div class="cake-preview-card">
+          <div class="cake-visual">
+            <div class="cake-tier-top" id="visual-top"></div>
+            <div class="cake-tier-bottom" id="visual-bottom">
+              <div class="cake-filling-line" id="visual-filling"></div>
+            </div>
+            <div class="cake-stand"></div>
+          </div>
+          <ul class="summary-list">
+            <li><span>Tamaño:</span> <span id="sum-size">20 porciones</span></li>
+            <li><span>Bizcocho:</span> <span id="sum-flavor">Chocolate Intenso</span></li>
+            <li><span>Relleno:</span> <span id="sum-filling">Dulce de Leche</span></li>
+            <li><span>Betún:</span> <span id="sum-frosting">Buttercream Suizo</span></li>
+            <li><span>Foto Ref (HU-5):</span> <span id="sum-photo">Pendiente</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Precio base pastel:</span>
+          <span id="price-base">$36.00</span>
+        </div>
+        <div class="price-row">
+          <span>Extras seleccionados:</span>
+          <span id="price-extras">$0.00</span>
+        </div>
+        <div class="price-row" style="font-weight:700;">
+          <span>Costo Total:</span>
+          <span id="price-total">$36.00</span>
+        </div>
+        <div class="price-row highlight">
+          <span>Anticipo hoy (50%):</span>
+          <span id="price-deposit">$18.00</span>
+        </div>
+        <div class="price-row" style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+          <span>Saldo pendiente al retirar:</span>
+          <span id="price-balance">$18.00</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  let order = JSON.parse(localStorage.getItem('laCeibaOrder')) || {
+    sizeName: '20 porciones',
+    sizeId: 'size-20',
+    basePrice: 36,
+    flavor: 'Chocolate Intenso',
+    cakeColor: '#4A2511',
+    filling: 'Dulce de Leche',
+    fillingColor: '#C67D3B',
+    frosting: 'Buttercream Suizo',
+    frostingColor: '#FFFDF9',
+    extrasPrice: 0,
+    photoAttached: false,
+    branch: 'Sucursal Santa Tecla',
+    timeSlot: '10:00 AM - 12:00 PM',
+    date: 'Dom 18 Oct 2026'
+  };
+
+  function selectSize(name, price, id) {
+    order.sizeName = name;
+    order.basePrice = price;
+    order.sizeId = id;
+    document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById(id).classList.add('selected');
+    saveAndRender();
+  }
+
+  function simulateUpload() {
+    order.photoAttached = true;
+    const box = document.getElementById('upload-box');
+    document.getElementById('upload-text').innerHTML = '✅ <strong>referencia_evento.jpg</strong> cargada';
+    box.style.borderColor = 'var(--success)';
+    box.style.background = 'var(--success-bg)';
+    saveAndRender();
+  }
+
+  function saveAndRender() {
+    const fl = document.getElementById('select-flavor');
+    const fi = document.getElementById('select-filling');
+    const fr = document.getElementById('select-frosting');
+
+    order.flavor = fl.value;
+    order.cakeColor = fl.options[fl.selectedIndex].dataset.color;
+
+    order.filling = fi.value;
+    order.fillingColor = fi.options[fi.selectedIndex].dataset.color;
+    const extraFi = parseFloat(fi.options[fi.selectedIndex].dataset.extra || 0);
+
+    order.frosting = fr.value;
+    order.frostingColor = fr.options[fr.selectedIndex].dataset.color;
+    const extraFr = parseFloat(fr.options[fr.selectedIndex].dataset.extra || 0);
+
+    order.extrasPrice = extraFi + extraFr;
+    order.total = order.basePrice + order.extrasPrice;
+    order.deposit = order.total / 2;
+
+    localStorage.setItem('laCeibaOrder', JSON.stringify(order));
+
+    // Renderizar resumen y colores
+    document.getElementById('sum-size').textContent = order.sizeName;
+    document.getElementById('sum-flavor').textContent = order.flavor;
+    document.getElementById('sum-filling').textContent = order.filling;
+    document.getElementById('sum-frosting').textContent = order.frosting;
+    document.getElementById('sum-photo').textContent = order.photoAttached ? 'Adjuntada ✓' : 'Sin foto';
+
+    document.getElementById('price-base').textContent = `$${order.basePrice.toFixed(2)}`;
+    document.getElementById('price-extras').textContent = `$${order.extrasPrice.toFixed(2)}`;
+    document.getElementById('price-total').textContent = `$${order.total.toFixed(2)}`;
+    document.getElementById('price-deposit').textContent = `$${order.deposit.toFixed(2)}`;
+    document.getElementById('price-balance').textContent = `$${order.deposit.toFixed(2)}`;
+
+    const top = document.getElementById('visual-top');
+    const bot = document.getElementById('visual-bottom');
+    top.style.background = order.cakeColor;
+    bot.style.background = order.cakeColor;
+    top.style.borderTopColor = order.frostingColor;
+    bot.style.borderTopColor = order.frostingColor;
+    document.getElementById('visual-filling').style.background = order.fillingColor;
+  }
+
+  window.onload = () => {
+    document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+    const activeCard = document.getElementById(order.sizeId || 'size-20');
+    if (activeCard) activeCard.classList.add('selected');
+
+    document.getElementById('select-flavor').value = order.flavor;
+    document.getElementById('select-filling').value = order.filling;
+    document.getElementById('select-frosting').value = order.frosting;
+    if (order.photoAttached) simulateUpload();
+    saveAndRender();
+  };
+</script>
+
+</body>
+</html>
